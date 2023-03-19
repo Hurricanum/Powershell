@@ -1,0 +1,39 @@
+#Liste aller Hosts die abgefragt werden sollte als ListOfComputers.txt im Verzeichnis C:\Treiber\ erstellt werden
+#
+#
+$hosts = Get-Content -Path C:\Treiber\ListOfComputers.txt
+New-Item -ItemType file C:\Treiber\out.txt -ErrorAction SilentlyContinue
+foreach($hostPC in $hosts)
+{
+try{ 
+ Get-WMIObject -ComputerName $hostPC -Class Win32_Service -ErrorAction Stop |
+Select-Object StartName, name, $hostPC|
+Where-Object {$_.StartName -like '*System'} |
+Out-File -Append C:\Treiber\out.txt;
+"$hostPC erfolgreich abgefragt" | Out-File -Append C:\Treiber\out.txt;
+Write-Host "$hostPC abgefragt"
+}
+ 
+catch [System.Runtime.InteropServices.COMException]
+{
+    if ($_.FullyQualifiedErrorId.StartsWith("GetWMICOMException"))
+    {
+        if (Test-Connection -Count 2 $hostPC -Quiet)
+                {
+                "$hostPC erreichbar durch ping, konnte aber nicht abgefragt werden" | Out-File -Append C:\Treiber\out.txt;
+                "$hostPC erreichbar durch ping, konnte aber nicht abgefragt werden"
+                }
+        else{
+                "$hostPC durch ping nicht erreichbar" | Out-File -Append C:\Treiber\out.txt;
+                "$hostPC durch ping nicht erreichbar"
+                }
+    }
+    else { throw }
+}
+ 
+catch [System.UnauthorizedAccessException]
+{
+    Write-Host "User $env:USERNAME hat keine ausreichende Berechtingung um $hostPC abzufragen!";
+}
+Format-List
+} 
