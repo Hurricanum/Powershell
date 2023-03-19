@@ -8,7 +8,7 @@ foreach($hostPC in $hosts)
 try{ 
  Get-WMIObject -ComputerName $hostPC -Class Win32_Service -ErrorAction Stop |
 Select-Object StartName, name, $hostPC|
-Where-Object {$_.StartName -like '*System'} |
+Where-Object {$_.StartName -like '*Administrator'} |
 Out-File -Append C:\Treiber\out.txt;
 "$hostPC erfolgreich abgefragt" | Out-File -Append C:\Treiber\out.txt;
 Write-Host "$hostPC abgefragt"
