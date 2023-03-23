@@ -1,1 +1,4 @@
-Get-ChildItem ...
+$pfad = "E:\Benutzer\"
+
+Get-ChildItem -Path $pfad -Recurse -Include *.jpg, *.txt, *.doc, *.xlsx -ErrorAction SilentlyContinue |
+Where-Object -FilterScript{$_.Mode -ne 'd'}
