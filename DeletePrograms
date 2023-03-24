@@ -1,0 +1,18 @@
+# Liste der zu löschenden Programme oder Apps
+$apps = @(
+    "Microsoft OneNote",
+    "Skype",
+    "iTunes"
+
+)
+
+foreach ($app in $apps) {
+    # Prüfen, ob das Programm installiert ist
+    if (Get-AppxPackage -Name $app -ErrorAction SilentlyContinue) {
+        # Programm deinstallieren
+        Write-Host "Deinstalliere $app..."
+        Get-AppxPackage -Name $app | Remove-AppxPackage
+    } else {
+        Write-Host "$app nicht gefunden. Keine Aktion erforderlich."
+    }
+}
